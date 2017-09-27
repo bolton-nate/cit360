@@ -12,13 +12,14 @@ import java.util.concurrent.*;
  */
 public class RecurFindPrimes extends RecursiveAction {
 
-    private int threshold = 50000;
+    private int threshold;
     private int s1, s2, i, j;
     public volatile static int numberOfPrimes;
     
-    public RecurFindPrimes(int s1, int s2) {
+    public RecurFindPrimes(int s1, int s2, int threshold) {
         this.s1 = s1;
         this.s2 = s2;
+        this.threshold = threshold;
     }
     
     public void compute()
@@ -50,14 +51,14 @@ public class RecurFindPrimes extends RecursiveAction {
             }
         } else {
             int midPoint = ((s2-s1)/2) + s1;
-            RecurFindPrimes task1 = new RecurFindPrimes(s1,midPoint);//lower split
+            RecurFindPrimes task1 = new RecurFindPrimes(s1,midPoint,threshold);//lower split
             task1.fork();
-            RecurFindPrimes task2 = new RecurFindPrimes(midPoint+1,s2);//upper split
+            RecurFindPrimes task2 = new RecurFindPrimes(midPoint+1,s2,threshold);//upper split
             task2.fork();
             task1.join();
             task2.join();
         }
-        System.out.println("FORK JOIN POOL:  The number of prime numbers between " + s1 + " and " + s2 + " is:" + numberOfPrimes);
+        System.out.println("FORK JOIN POOL:  Finished:  " + s1 + " to " + s2 + ".  The current sum of prime numbers is:" + numberOfPrimes);
         long totalTime = System.nanoTime() - startTime;
         System.out.println("RecurFindPrimes took about : " + totalTime/1_000_000_000 + " seconds.");
     }

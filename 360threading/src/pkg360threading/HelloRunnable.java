@@ -19,6 +19,7 @@ public class HelloRunnable implements Runnable {
     public void run() {
         System.out.println(Thread.currentThread().getName() + ":  Hello from a thread!");
         
+        //from https://docs.oracle.com/javase/tutorial/essential/concurrency/simple.html
         String importantInfo[] = {
             "Mares eat oats",
             "Does eat oats",
@@ -67,7 +68,7 @@ public class HelloRunnable implements Runnable {
         
         HelloRunnable hr = new HelloRunnable();
         Map<String, Thread> myMap = new HashMap<String, Thread>();
-        int numThreads = 10;
+        int numThreads = 100;  //change to increase or decrease simultaneous threads.
         
         //First we make em'
         System.out.println(Thread.currentThread().getName() + ":  Creating " + numThreads + " new threads...");
@@ -110,25 +111,29 @@ public class HelloRunnable implements Runnable {
                 Thread.sleep(2000);
             }
         }
-        System.out.println("All threads have completed operations, hit enter to continue...");
+        System.out.println("All threads have completed operations, hit enter to begin executor code...");
         try {
             System.in.read();
         } catch (IOException e) {
             e.printStackTrace();
         }
         
+        //BEGIN EXECUTOR CODE HERE (uncomment one at a time)
+        //CHANGE THE NUMBERS BELOW TO INCREASE OR DECREASE PROCESSING TIME
         int primeStart = 2;
-        int primeEnd = 600000;
+        int primeEnd = 1000000;
+        int threshold = 10000; //threshold for fork
+        //SINGLE THREAD EXECUTOR
 //        System.out.println("Starting again with Executors");
 //        FindPrimes fp = new FindPrimes(primeStart, primeEnd);
 //        ExecutorService exec = Executors.newSingleThreadExecutor();
 //        exec.submit(fp);
 //        exec.shutdown();
 
-        
+        //RECURSIVE MULTITHREADED/FORKED EXECUTOR
         System.out.println("Starting again with ForkJoinPool");
-        ForkJoinPool forkJoinPool = new ForkJoinPool(20);
-        RecurFindPrimes recurFindPrimes = new RecurFindPrimes(primeStart,primeEnd);
+        ForkJoinPool forkJoinPool = new ForkJoinPool(8);
+        RecurFindPrimes recurFindPrimes = new RecurFindPrimes(primeStart,primeEnd,threshold);
         forkJoinPool.invoke(recurFindPrimes);
     }
 
