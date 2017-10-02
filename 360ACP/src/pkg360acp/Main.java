@@ -5,6 +5,7 @@
  */
 package pkg360acp;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -14,17 +15,19 @@ import java.util.Scanner;
  *
  * @author natebolton
  */
-public class Main {
+public class Main implements Serializable {
 
     /**
      * @param args the command line arguments
      */
-    public static boolean loggedIn = false;
-    public static int savings = 0;
-    public static int checking = 0;
-    public static HashMap stocksOwned = new HashMap();
-    public static void main(String[] args) {
+    private static boolean loggedIn = false;
+    private static int savings = 0;
+    private static int checking = 0;
+    private static HashMap stocksOwned = new HashMap();
+    
+    public void main() {
 
+        
         //create app controller and establish feed it some view classes
         ApplicationController appController = new ApplicationController();
         appController.mapCommand("login", new Login());
@@ -33,18 +36,18 @@ public class Main {
         
         HashMap handlerData = new HashMap();
         //ask the user to log in.
-        while (!loggedIn) {
+        while (!this.loggedIn) {
             System.out.println("Welcome to Fake Bank of CIT360\n\nPlease Log in.\n\n");
             handlerData.put("username", Main.getInput("Username:  "));
             handlerData.put("password", Main.getInput("Password:  "));
             appController.handleRequest("login", handlerData);
         }
-        while (loggedIn) {
+        while (this.loggedIn) {
             handlerData.clear();
-            System.out.println("\nYour Checking Balance is:  $" + Main.checking);
-            System.out.println("\nYour Savings Balance is:  $" + Main.savings);
+            System.out.println("\nYour Checking Balance is:  $" + this.checking);
+            System.out.println("\nYour Savings Balance is:  $" + this.savings);
             System.out.println("\nYour owned stocks are:\n");
-            Iterator iterator = stocksOwned.entrySet().iterator();
+            Iterator iterator = this.stocksOwned.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry value = (Map.Entry) iterator.next();
                 System.out.println("Stock: "+ value.getKey() + " & Amount: " + value.getValue());
@@ -96,6 +99,38 @@ public class Main {
             break;
         }
     return value;
+    }
+
+    public static boolean isLoggedIn() {
+        return loggedIn;
+    }
+
+    public static void setLoggedIn(boolean loggedIn) {
+        Main.loggedIn = loggedIn;
+    }
+
+    public static int getSavings() {
+        return savings;
+    }
+
+    public static void setSavings(int savings) {
+        Main.savings = savings;
+    }
+
+    public static int getChecking() {
+        return checking;
+    }
+
+    public static void setChecking(int checking) {
+        Main.checking = checking;
+    }
+
+    public static HashMap getStocksOwned() {
+        return stocksOwned;
+    }
+
+    public static void setStocksOwned(HashMap stocksOwned) {
+        Main.stocksOwned = stocksOwned;
     }
     
 }

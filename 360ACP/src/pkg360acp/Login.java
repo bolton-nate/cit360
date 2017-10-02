@@ -18,7 +18,7 @@ public class Login implements Handler {
 
         if (data.get("username").equals("admin") && data.get("password").equals("password")) {
             System.out.println("Welcom, Admin.  You are Logged in.");
-            Main.loggedIn = true;
+            Main.setLoggedIn(true);
         } else {
             System.out.println("I'm sorry, you are not admin/password.  Please try again later.");
             System.exit(0);
