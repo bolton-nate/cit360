@@ -4,9 +4,14 @@
  * and open the template in the editor.
  */
 package hibernate360;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import model.*;
+import view.*;
 import java.util.*;
 import org.hibernate.HibernateException;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.SessionFactory;
@@ -25,17 +30,35 @@ public class Hibernate360 {
     
     private static SessionFactory factory;
     private static ServiceRegistry serviceRegistry;
+    private static PrintWriter outFile = null;
+    private static BufferedReader inFile = null;
+    
     public static void main(String[] args) {
         try {
+            System.out.println("Creating SessionFactory...");
             factory = Hibernate360.createSessionFactory();
         } catch (Throwable ex) {
             System.out.println("Failed to get session factory. " + ex);
             throw new ExceptionInInitializerError(ex);
         }
+        //System.out.println("finished with factory creation");
+        try {
+            
+            Hibernate360.inFile = new BufferedReader(new InputStreamReader(System.in));
+            Hibernate360.outFile = new PrintWriter(System.out, true);
+            
+            MainMenu mainMenu = new MainMenu();
+            mainMenu.display();
+        } catch (Throwable te) {
+            System.out.println("This program has encountered an error and will close.");
+            System.out.println(te.getMessage());
+            te.printStackTrace();
+            System.exit(0);
+        }
         
-        Hibernate360 hb360 = new Hibernate360();
-        Employees employee = hb360.addEmployees("test1","test2",25);
-        hb360.listEmployees();
+//        Hibernate360 hb360 = new Hibernate360();
+//        Employees employee = hb360.addEmployees("test1","test2",25);
+//        hb360.listEmployees();
     }
     
     public Employees addEmployees(String fName, String lName, int empType) {
@@ -58,6 +81,29 @@ public class Hibernate360 {
         return employee;
     }
     
+    public void removeEmployee(Integer empID) {
+        Session session = factory.openSession();
+        Transaction tx = null;
+        Employees employee = null;
+        try {
+            tx = session.beginTransaction();
+            employee = (Employees) session.load(Employees.class, empID);
+            if (employee != null) {
+                try {
+                    session.delete(employee);
+                } catch(ObjectNotFoundException ex) {
+                    System.out.println("\n\nThat employee does not exist in the database");
+                }
+            }
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+    }
+    
     public void listEmployees( ){
         //Get the session from the session factory.
         Session session = factory.openSession();
@@ -72,7 +118,7 @@ public class Hibernate360 {
                 System.out.print("ID: " + employee.getEmpId());
                 System.out.print("\tfirst name: " + employee.getFirstName());
                 System.out.print("\tlast name: " + employee.getLastName());
-                System.out.print("\temployee type: " + employee.getEmpType());
+                System.out.print("\t\temployee type: " + employee.getEmpType());
                 System.out.println("\n");
             }
             tx.commit();
@@ -91,5 +137,38 @@ public class Hibernate360 {
         SessionFactory sessionFactory = configuration.buildSessionFactory(serviceRegistry);
         return sessionFactory;
     }
+
+    public static SessionFactory getFactory() {
+        return factory;
+    }
+
+    public static void setFactory(SessionFactory factory) {
+        Hibernate360.factory = factory;
+    }
+
+    public static ServiceRegistry getServiceRegistry() {
+        return serviceRegistry;
+    }
+
+    public static void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        Hibernate360.serviceRegistry = serviceRegistry;
+    }
+
+    public static PrintWriter getOutFile() {
+        return outFile;
+    }
+
+    public static void setOutFile(PrintWriter outFile) {
+        Hibernate360.outFile = outFile;
+    }
+
+    public static BufferedReader getInFile() {
+        return inFile;
+    }
+
+    public static void setInFile(BufferedReader inFile) {
+        Hibernate360.inFile = inFile;
+    }
+    
     
 }
