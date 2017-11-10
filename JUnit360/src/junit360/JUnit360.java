@@ -91,4 +91,12 @@ public class JUnit360 {
         return daysWithoutWeekendDays-w1+w2;
     }
     
+    public static Integer testNull() {
+        return null;
+    }
+    
+    public static int[] testArray() {
+        
+        return new int[]{1,2,3}; 
+    }
 }

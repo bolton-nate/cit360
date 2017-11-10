@@ -65,7 +65,54 @@ public class JUnit360Test {
         boolean expResult = true;
         boolean result = JUnit360.validateReportedDaysOff(date1, date2, reportedDaysOff);
         assertEquals(expResult, result);
+        
+        //TEST 2B - Same Days w/ assertTrue
+        System.out.println("validateReportedDaysOff - Same Days - AssertTrue");
+        date1 = new Date();
+        date2 = new Date();
+        reportedDaysOff = 0L;
+        assertTrue(JUnit360.validateReportedDaysOff(date1, date2, reportedDaysOff));
 
+        //TEST 2C - Same Days w/ assertFalse
+        System.out.println("validateReportedDaysOff - Same Days - AssertFalse");
+        date1 = new Date();
+        date2 = new Date();
+        reportedDaysOff = 5L;
+        assertFalse(JUnit360.validateReportedDaysOff(date1, date2, reportedDaysOff));
+        
+        //TEST 2D - Same Days w/ assertNotNull
+        System.out.println("validateReportedDaysOff - Same Days - AssertNotNull");
+        date1 = new Date();
+        date2 = new Date();
+        reportedDaysOff = 5L;
+        assertNotNull(JUnit360.validateReportedDaysOff(date1, date2, reportedDaysOff));
+        
+        //TEST 2E - assertNull
+        System.out.println("validateReportedDaysOff - Same Days - AssertNull");
+        assertNull(JUnit360.testNull());
+        
+        //TEST 2F - Same Days w/ assertNotSame
+        System.out.println("validateReportedDaysOff - Same Days - AssertNotSame");
+        date1 = new Date();
+        date2 = new Date();
+        reportedDaysOff = 5L;
+        expResult = true;
+        result = JUnit360.validateReportedDaysOff(date1, date2, reportedDaysOff);
+        assertNotSame(expResult, result);
+        
+        //TEST 2F - Same Days w/ assertNotEquals
+        System.out.println("validateReportedDaysOff - Same Days - AssertNotEquals");
+        date1 = new Date();
+        date2 = new Date();
+        reportedDaysOff = 5L;
+        expResult = true;
+        result = JUnit360.validateReportedDaysOff(date1, date2, reportedDaysOff);
+        assertNotEquals(expResult, result);
+        
+        //TEST 2G - testArray
+        System.out.println("AssertArrayEquals");
+        assertArrayEquals(new int[]{1,2,3},JUnit360.testArray());
+        
         //TEST 3 - One Day Off
         System.out.println("validateReportedDaysOff - One Day");
         SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
