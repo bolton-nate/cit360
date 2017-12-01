@@ -46,6 +46,9 @@ Contributor(s):
     <property name="hibernate.connection.url">jdbc:mysql://192.168.1.42:3306/cit360?zeroDateTimeBehavior=convertToNull</property>
     <property name="hibernate.connection.username">student</property>
     <property name="hibernate.connection.password">student</property>
-    <mapping resource="Employees.hbm.xml"/>
+    <mapping resource="model/Employees.hbm.xml"/>
+    <mapping resource="model/EmployeeAuth.hbm.xml"/>
+    <mapping resource="model/Requests.hbm.xml"/>
+    <mapping resource="model/EmployeeType.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>

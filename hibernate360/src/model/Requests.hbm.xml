@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Nov 27, 2017 8:07:13 PM by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="model.Requests" table="requests" catalog="cit360">
+        <id name="requestId" type="java.lang.Integer">
+            <column name="request_id" />
+            <generator class="identity" />
+        </id>
+        <timestamp name="timestamp" column="timestamp" />
+        <many-to-one name="employees" class="model.Employees" fetch="select">
+            <column name="emp_id" not-null="true" />
+        </many-to-one>
+        <property name="startDate" type="timestamp">
+            <column name="start_date" length="19" not-null="true" />
+        </property>
+        <property name="returnDate" type="timestamp">
+            <column name="return_date" length="19" not-null="true" />
+        </property>
+        <property name="reason" type="string">
+            <column name="reason" length="65535" />
+        </property>
+        <property name="daysRequested" type="int">
+            <column name="days_requested" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

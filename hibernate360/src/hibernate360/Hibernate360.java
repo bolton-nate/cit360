@@ -12,6 +12,7 @@ import view.*;
 import java.util.*;
 import org.hibernate.HibernateException;
 import org.hibernate.ObjectNotFoundException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.SessionFactory;
@@ -47,8 +48,10 @@ public class Hibernate360 {
             Hibernate360.inFile = new BufferedReader(new InputStreamReader(System.in));
             Hibernate360.outFile = new PrintWriter(System.out, true);
             
-            MainMenu mainMenu = new MainMenu();
-            mainMenu.display();
+            Login login = new Login();
+            login.display();
+//            MainMenu mainMenu = new MainMenu();
+//            mainMenu.display();
         } catch (Throwable te) {
             System.out.println("This program has encountered an error and will close.");
             System.out.println(te.getMessage());
@@ -68,7 +71,8 @@ public class Hibernate360 {
         Integer empID = null;
         try {
             tx = session.beginTransaction();
-            employee = new Employees(fName,lName,empType);
+            EmployeeType employeeType = new EmployeeType(empType);
+            employee = new Employees(employeeType,lName,fName,null,null);
             empID = (Integer) session.save(employee);
             tx.commit();
         } catch (HibernateException e) {
@@ -118,7 +122,7 @@ public class Hibernate360 {
                 System.out.print("ID: " + employee.getEmpId());
                 System.out.print("\tfirst name: " + employee.getFirstName());
                 System.out.print("\tlast name: " + employee.getLastName());
-                System.out.print("\t\temployee type: " + employee.getEmpType());
+                System.out.print("\t\temployee type: " + employee.getEmployeeType());
                 System.out.println("\n");
             }
             tx.commit();
@@ -129,6 +133,41 @@ public class Hibernate360 {
            session.close();
         }
      }
+    
+    public static String getPassword(String uname) {
+        Session session = factory.openSession();
+        Transaction tx = null;
+        String pword = null;
+        try {
+            tx = session.beginTransaction();
+            Query query = session.createQuery("SELECT E.password FROM model.EmployeeAuth E WHERE E.username = :uname");
+            query.setParameter("uname", uname);
+            List pwList = query.list();
+            //System.out.print("pwList is: " + pwList);
+            if (!pwList.isEmpty()) {
+                pword = pwList.get(0).toString();
+            }
+            //System.out.print("pword in getPassword is: " + pword);
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        
+        return pword;
+    }
+    
+    public static boolean authenticateUser(String uname, String pword) {
+        String pwordCheck = Hibernate360.getPassword(uname);
+        //System.out.println("pwordCheck is: " + pwordCheck);
+        if (pword.equals(pwordCheck)) {
+            return true;
+        }
+        
+        return false;
+    }
     
     public static SessionFactory createSessionFactory() {
         Configuration configuration = new Configuration();

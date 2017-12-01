@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Nov 27, 2017 6:29:00 PM by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="model.EmployeeType" table="employee_type" catalog="cit360" optimistic-lock="version">
+        <id name="typeId" type="int">
+            <column name="type_id" />
+            <generator class="assigned" />
+        </id>
+        <property name="typeTitle" type="string">
+            <column name="type_title" length="40" />
+        </property>
+        <set name="employeeses" table="employees" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="emp_type" not-null="true" />
+            </key>
+            <one-to-many class="model.Employees" />
+        </set>
+    </class>
+</hibernate-mapping>

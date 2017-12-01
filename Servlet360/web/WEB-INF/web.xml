@@ -8,6 +8,10 @@
         <servlet-name>GuessMyNumber</servlet-name>
         <servlet-class>guess.GuessMyNumber</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>helloAndroid</servlet-name>
+        <servlet-class>helloAndroid.HelloAndroid</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>test</servlet-name>
         <url-pattern>/test</url-pattern>
@@ -15,6 +19,10 @@
     <servlet-mapping>
         <servlet-name>GuessMyNumber</servlet-name>
         <url-pattern>/guess</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>helloAndroid</servlet-name>
+        <url-pattern>/helloAndroid</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

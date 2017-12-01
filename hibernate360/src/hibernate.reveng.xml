@@ -41,5 +41,8 @@ Contributor(s):
 -->
 <hibernate-reverse-engineering>
   <schema-selection match-catalog="cit360"/>
+  <table-filter match-name="requests"/>
+  <table-filter match-name="employee_auth"/>
+  <table-filter match-name="employee_type"/>
   <table-filter match-name="employees"/>
 </hibernate-reverse-engineering>

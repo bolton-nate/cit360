@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">TimeOffRequest</string>
+    <string name="login">Please Enter Your Login Info</string>
+</resources>
