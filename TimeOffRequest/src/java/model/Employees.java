@@ -77,6 +77,11 @@ public class Employees  implements java.io.Serializable {
         this.employeeAuths = employeeAuths;
     }
 
+    @Override
+    public String toString() {
+        return "Employees{" + "empId=" + empId + ", employeeType=" + employeeType + ", lastName=" + lastName + ", firstName=" + firstName + ", requestses=" + requestses + ", employeeAuths=" + employeeAuths + '}';
+    }
+
 
 
 

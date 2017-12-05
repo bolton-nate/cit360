@@ -1,7 +1,24 @@
 package com.natebolton.timeoffrequest;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -9,25 +26,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import java.net.URL;
 import java.net.URLConnection;
-import android.app.Activity;
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
+import java.net.URLEncoder;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -37,13 +38,21 @@ public class MainActivity extends AppCompatActivity {
     TextView outputText;
 
     public static final String DESTURL =
-            "http://10.0.2.2:8080/TimeOffRequest/logincontrol";
+            "http://192.168.1.41:8080/TimeOffRequest/logincontrol";
+    //"http://10.0.2.2:8080/TimeOffRequest/logincontrol";
 
-    @Override
+    public static final String MyPREFERENCES = "MyPrefs" ;
+    public static final String uid = "uidKey";
+    public static final String usertitle = "titleKey";
+    public static final String firstname = "fnameKey";
+    public static final String lastname = "lnameKey";
+    SharedPreferences sharedpreferences;
+    //SharedPreferences.Editor editor;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         findViewsById();
 
         submit.setOnClickListener(new View.OnClickListener() {
@@ -73,49 +82,87 @@ public class MainActivity extends AppCompatActivity {
             // Getting username and password from user input
             String username = uname.getText().toString();
             String pass = password.getText().toString();
-
-/*            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("u",username));
-            params.add(new BasicNameValuePair("p",pass));
-            json = jParser.makeHttpRequest(url_login, "GET", params);
-            String s=null;*/
-
+            EmployeeAuth empAuth = null;
             StringBuilder result = new StringBuilder();
-            try {
-                URL url = new URL(DESTURL);
-                URLConnection connection = url.openConnection();
-                HttpURLConnection httpConnection = (HttpURLConnection) connection;
-                httpConnection.setRequestMethod("POST");
-                String urlParameters = "uname=" + username + "&pw=" + pass;
-                //httpConnection.connect();
-                //httpConnection.setDoOutput(true);
-                try (DataOutputStream wr = new DataOutputStream(httpConnection.getOutputStream())) {
-                    wr.writeBytes(urlParameters);
-                    wr.flush();
-                }
-                if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    InputStream stream = httpConnection.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-                    String line;
+            if (username != null && pass != null) {
 
-                    while ((line = reader.readLine()) != null) {
-                        Log.d("RESPONSE",line);
-                        result.append(line);
+                empAuth = new EmployeeAuth(null,username,pass);
+                try {
+                    Gson gson = new GsonBuilder().create();
+                    String json = gson.toJson(empAuth);// obj is your object
+                    //Log.d("RESPONSE",json);
+                    JSONObject jsonObj = new JSONObject(json);
+                    //Log.d("RESPONSE",jsonObj.toString());
+
+                    URL url = new URL(DESTURL);
+                    URLConnection connection = url.openConnection();
+                    HttpURLConnection httpConnection = (HttpURLConnection) connection;
+                    httpConnection.setRequestMethod("POST");
+                    //String urlParameters = "uname=" + username + "&pw=" + pass;
+                    //httpConnection.connect();
+                    //httpConnection.setDoOutput(true);
+                    //Create JSONObject here
+
+                    //                jsonObj.put("uname", username);
+                    //                jsonObj.put("pw", pass);
+                    try (DataOutputStream wr = new DataOutputStream(httpConnection.getOutputStream())) {
+                        //wr.writeBytes(urlParameters);
+                        wr.writeBytes(URLEncoder.encode(jsonObj.toString(),"UTF-8"));
+                        wr.flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
 
-                    //outputText.setText(stream.toString());
-                }
-                ((HttpURLConnection) connection).disconnect();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+                    if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        InputStream stream = httpConnection.getInputStream();
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+                        String line;
 
+                        while ((line = reader.readLine()) != null) {
+                            Log.d("RESPONSE",line);
+                            result.append(line);
+                        }
+                    }
+                    ((HttpURLConnection) connection).disconnect();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
             return result.toString();
 
         }
 
         protected void onPostExecute(String result) {
-            outputText.setText(result);
+            JSONParser parser = new JSONParser();
+            org.json.simple.JSONObject jsonObj = null;
+            try {
+                jsonObj = (org.json.simple.JSONObject) parser.parse(result);
+            } catch (ParseException ex ) {
+                ex.printStackTrace();
+            }
+            Log.d("JSONOBJ",jsonObj.toString());
+            Log.d("JSONOBJ_emp_id",jsonObj.get("emp_id").toString());
+            String response = null;
+            response = (String) jsonObj.get("response");
+            if (response.equals("Logged In!")) {
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+
+                editor.putInt(uid, ((Long) jsonObj.get("emp_id")).intValue());
+                editor.putString(usertitle, (String) jsonObj.get("employeeTitle"));
+                editor.putString(firstname, (String) jsonObj.get("firstname"));
+                editor.putString(lastname, (String) jsonObj.get("lastname"));
+                editor.apply();
+
+                if (jsonObj.get("employeeTitle").toString().equals("admin")) {
+                    Log.d("BRANCH: ", "starting admin menu");
+                    startActivity(new Intent(MainActivity.this, MainMenuAdminActivity.class));
+                } else {
+                    Log.d("BRANCH: ", "starting user menu");
+                    startActivity(new Intent(MainActivity.this, MainMenuActivity.class));
+                }
+            } else {
+                outputText.setText(response);
+            }
         }
 
     }

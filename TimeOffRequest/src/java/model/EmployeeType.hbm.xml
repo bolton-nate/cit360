@@ -11,11 +11,5 @@
         <property name="typeTitle" type="string">
             <column name="type_title" length="40" />
         </property>
-        <set name="employeeses" table="employees" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="emp_type" not-null="true" />
-            </key>
-            <one-to-many class="model.Employees" />
-        </set>
     </class>
 </hibernate-mapping>

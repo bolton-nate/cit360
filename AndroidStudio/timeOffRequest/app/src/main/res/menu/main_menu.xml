@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/viewRequests"
+        android:title="View Time Off Requests" />
+    <item
+        android:id="@+id/submitRequest"
+        android:title="Submit Time Off Request" />
+    <item
+        android:id="@+id/logoff"
+        android:title="Log Out" />
+</menu>

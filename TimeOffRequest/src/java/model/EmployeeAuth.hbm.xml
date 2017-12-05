@@ -8,9 +8,9 @@
             <column name="auth_id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="employees" class="model.Employees" fetch="select">
+        <property name="emp_id" type="java.lang.Integer">
             <column name="emp_id" not-null="true" />
-        </many-to-one>
+        </property>
         <property name="username" type="string">
             <column name="username" length="40" not-null="true" />
         </property>

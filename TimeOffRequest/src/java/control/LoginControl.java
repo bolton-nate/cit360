@@ -5,15 +5,21 @@
  */
 package control;
 
+import java.io.BufferedReader;
+
+import model.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Enumeration;
+import java.net.URLDecoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -32,61 +38,57 @@ public class LoginControl extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-//        JSONObject json = new JSONObject();
-//        ArrayList <String> parameterNames = new ArrayList<>();
-//        Enumeration jsonNames = request.getParameterNames();
-//           while (jsonNames.hasMoreElements()) {
-//               String parameterName = (String) jsonNames.nextElement();
-//               parameterNames.add(parameterName);
-//           }
-        String u=htmlFilter(request.getParameter("uname"));
-        String p=htmlFilter(request.getParameter("pw"));
-        System.out.println("USERLOG:  " + u + " " + p);
         
-//        if (LoginControl.authenticateUser(parameterNames.get(0), parameterNames.get(1))) {
+        response.setContentType("text/html;charset=UTF-8");//application/json
+        //System.out.println("USERLOG:  " + request.getReader().readLine());
+        
+        StringBuilder sb = new StringBuilder();
+        BufferedReader br = request.getReader();
+        String str;
+        while( (str = br.readLine()) != null ){
+            sb.append(str);
+        }
+        str = URLDecoder.decode(sb.toString(), "UTF-8");
+        
+        System.out.println("USERLOG:  " + str);
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObj = null;
+        try {
+            jsonObj = (JSONObject) parser.parse(str);
+        } catch (ParseException ex) {
+            Logger.getLogger(LoginControl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+//        System.out.println("USERLOG:  " + jsonObj.toString());
+//        System.out.println("USERLOG:  " + jsonObj.get("username"));
+        
+        String u = (String) jsonObj.get("username");
+        String p = (String) jsonObj.get("password");
         PrintWriter out = response.getWriter();
         int result = LoginControl.authenticateUser(u, p);
+        jsonObj = new JSONObject();
         if ( result == 1) {
             //TODO:  Success... now what?
-            out.println("Logged In!");
+            HibernateControl hc = new HibernateControl();
+            Employees employee = hc.getEmployeeByUsername(u);
+            System.out.println("EMPLOYEE FIRST NAME: " + employee.getFirstName());
+            response.setContentType("application/json");
+            jsonObj.put("response", "Logged In!");
+            jsonObj.put("emp_id", employee.getEmpId());
+            jsonObj.put("employeeTitle", employee.getEmployeeType().getTypeTitle());
+            jsonObj.put("firstname", employee.getFirstName());
+            jsonObj.put("lastname", employee.getLastName());
+            System.out.println(jsonObj);
+            //out.println("Logged In!");
             //System.out.println("Logged In!");
         } else if (result == 0) {
-            out.println("Error, wrong username or password.");
+            jsonObj.put("response", "Error, wrong username or password.");
+            //out.println("Error, wrong username or password.");
         } else {
-            out.println("Error, something went wrong.");
+            jsonObj.put("response", "Error, something went wrong.");
+            //out.println("Error, something went wrong.");
+            
         }
-//        if (u.equals("admin") && p.equals("admin")) {
-//            RequestDispatcher rd=request.getRequestDispatcher("/view/employeeMainMenu.jsp");  
-//            rd.forward(request, response);  
-//        } else {
-//            try (PrintWriter out = response.getWriter()) {
-//                out.println("<!DOCTYPE html>");
-//                out.println("<html>");
-//                out.println("<head>");
-//                out.println("<title>Servlet GuessMyNumber</title>");            
-//                out.println("</head>");
-//                out.println("<body>");
-//                out.println("<div>Welcome to Time Off Requests</div>");
-//                out.println("<p style=\"color:red;\">Wrong Username or Password.  Please Try Again.</p>");  
-//                out.println("<form method=\"post\" action=\"/TimeOffRequest/logincontrol\">");
-//                out.println("    <fieldset>");
-//                out.println("        <legend>Time Off Request System Login</legend>");
-//                out.println("        <div>");
-//                out.println("            Username:<br>");
-//                out.println("            <input type=\"text\" size=25 name=\"userid\">");
-//                out.println("        </div>");
-//                out.println("        <div>");
-//                out.println("            Password:<br>");
-//                out.println("            <input type=\"Password\" size=25 name=\"pwd\">");
-//                out.println("        </div>");
-//                out.println("        <input type=\"submit\" value=\"Login\" />");
-//                out.println("    </fieldset>");
-//                out.println("</form>");
-//                out.println("</body>");
-//                out.println("</html>");
-//            }
-//        }
+        out.println(jsonObj);
     }
     
     public static int authenticateUser(String uname, String pword) {

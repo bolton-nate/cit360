@@ -5,6 +5,7 @@
  */
 package control;
 
+import model.*;
 import java.util.List;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -59,6 +60,42 @@ public class HibernateControl {
         }
         
         return pword;
+    }
+    
+    public Employees getEmployeeByUsername(String uname) {
+        try {
+            System.out.println("Creating SessionFactory...");
+            factory = HibernateControl.createSessionFactory();
+        } catch (Throwable ex) {
+            System.err.println("Failed to get session factory. " + ex);
+            throw new ExceptionInInitializerError(ex);
+        }
+        Session session = factory.openSession();
+        Transaction tx = null;
+        
+        Employees employee = null;
+        int uid = 0;
+        try {
+            tx = session.beginTransaction();
+            Query query = session.createQuery("SELECT E.emp_id FROM model.EmployeeAuth E WHERE E.username = :uname");
+            query.setParameter("uname", uname);
+            List idList = query.list();
+            //System.out.print("pwList is: " + pwList);
+            if (!idList.isEmpty()) {
+                uid = (int) idList.get(0);
+            }
+            employee = (Employees) session.get(Employees.class, uid);
+            System.out.println("HIBERNATE GOT:  " + employee.toString());
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        
+        
+        return employee;
     }
     
     public static SessionFactory createSessionFactory() {
