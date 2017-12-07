@@ -88,7 +88,11 @@ public class HibernateControl {
                 uid = (int) idList.get(0);
             }
             employee = (Employees) session.get(Employees.class, uid);
-            Hibernate.initialize(employee.getEmployeeType().getTypeTitle());
+            try {
+                Hibernate.initialize(employee.getEmployeeType().getTypeTitle());
+            } catch (NullPointerException ex) {
+                ex.printStackTrace();
+            }
             //System.out.println("HIBERNATE GOT:  " + employee.toString());
             tx.commit();
         } catch (HibernateException e) {
