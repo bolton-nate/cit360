@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 public class MainMenuAdminActivity extends AppCompatActivity {
 
-    Button logout, viewEmployeeRequests, viewAdminReport, viewEmployees, createEmployee;
+    Button viewEmployeeRequests, viewAdminReport, viewEmployees, createEmployee;
     TextView welcomeMessage;
 
     @Override
@@ -22,17 +22,6 @@ public class MainMenuAdminActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences(MainActivity.MyPREFERENCES, Context.MODE_PRIVATE);
         findViewsById();
-
-        logout.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                Intent i = new Intent(MainMenuAdminActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                //i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
-
-            }
-        });
 
         viewEmployeeRequests.setOnClickListener(new View.OnClickListener() {
 
@@ -78,12 +67,11 @@ public class MainMenuAdminActivity extends AppCompatActivity {
             }
         });
 
-        welcomeMessage.setText("Welcome, " + sharedPreferences.getString(MainActivity.firstname,"") + " " + sharedPreferences.getString(MainActivity.lastname,""));
+        welcomeMessage.setText("User:  " + sharedPreferences.getString(MainActivity.firstname,"") + " " + sharedPreferences.getString(MainActivity.lastname,""));
     }
 
     private void findViewsById() {
 
-        logout = (Button) findViewById(R.id.buttonLogout);
         viewEmployeeRequests = (Button) findViewById(R.id.viewEmployeeRequests);
         viewAdminReport = (Button) findViewById(R.id.viewAdminReport);
         viewEmployees = (Button) findViewById(R.id.viewEmployees);

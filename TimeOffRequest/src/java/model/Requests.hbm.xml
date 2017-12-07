@@ -9,9 +9,9 @@
             <generator class="identity" />
         </id>
         <timestamp name="timestamp" column="timestamp" />
-        <many-to-one name="employees" class="model.Employees" fetch="select">
+        <property name="emp_id" type="java.lang.Integer">
             <column name="emp_id" not-null="true" />
-        </many-to-one>
+        </property>
         <property name="startDate" type="timestamp">
             <column name="start_date" length="19" not-null="true" />
         </property>

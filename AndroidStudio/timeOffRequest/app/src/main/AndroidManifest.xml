@@ -19,7 +19,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainMenuActivity" />
-        <activity android:name=".MainMenuAdminActivity"></activity>
+        <activity android:name=".MainMenuAdminActivity" />
+        <activity android:name=".ViewOwnRequests" />
+        <activity android:name=".SubmitOwnRequest"></activity>
     </application>
 
 </manifest>

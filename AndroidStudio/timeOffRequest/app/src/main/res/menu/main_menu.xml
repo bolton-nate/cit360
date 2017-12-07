@@ -6,7 +6,7 @@
         android:id="@+id/viewRequests"
         android:title="View Time Off Requests" />
     <item
-        android:id="@+id/submitRequest"
+        android:id="@+id/submitRequestSubmit"
         android:title="Submit Time Off Request" />
     <item
         android:id="@+id/logoff"

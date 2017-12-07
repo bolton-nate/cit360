@@ -40,7 +40,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <Button
-        android:id="@+id/submitRequest"
+        android:id="@+id/submitRequestSubmit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -52,6 +52,18 @@
         app:layout_constraintTop_toBottomOf="@+id/viewRequests" />
 
     <Button
+        android:id="@+id/adminMenu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Admin Menu"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/submitRequestSubmit" />
+
+    <Button
         android:id="@+id/buttonLogout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -61,6 +73,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/submitRequest" />
+        app:layout_constraintTop_toBottomOf="@+id/adminMenu" />
 
 </android.support.constraint.ConstraintLayout>

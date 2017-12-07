@@ -37,9 +37,8 @@ public class MainActivity extends AppCompatActivity {
     Button submit;
     TextView outputText;
 
-    public static final String DESTURL =
-            "http://192.168.1.41:8080/TimeOffRequest/logincontrol";
-    //"http://10.0.2.2:8080/TimeOffRequest/logincontrol";
+//    public static final String DESTURL = "http://192.168.1.41:8080/TimeOffRequest/logincontrol";
+    public static final String DESTURL = "http://10.0.2.2:8080/TimeOffRequest/logincontrol";
 
     public static final String MyPREFERENCES = "MyPrefs" ;
     public static final String uid = "uidKey";
@@ -140,28 +139,33 @@ public class MainActivity extends AppCompatActivity {
             } catch (ParseException ex ) {
                 ex.printStackTrace();
             }
-            Log.d("JSONOBJ",jsonObj.toString());
-            Log.d("JSONOBJ_emp_id",jsonObj.get("emp_id").toString());
+            //Log.d("JSONOBJ",jsonObj.toString());
+            //Log.d("JSONOBJ_emp_id",jsonObj.get("emp_id").toString());
             String response = null;
-            response = (String) jsonObj.get("response");
-            if (response.equals("Logged In!")) {
-                SharedPreferences.Editor editor = sharedpreferences.edit();
+            try {
+                response = (String) jsonObj.get("response");
+                if (response.equals("Logged In!")) {
+                    SharedPreferences.Editor editor = sharedpreferences.edit();
 
-                editor.putInt(uid, ((Long) jsonObj.get("emp_id")).intValue());
-                editor.putString(usertitle, (String) jsonObj.get("employeeTitle"));
-                editor.putString(firstname, (String) jsonObj.get("firstname"));
-                editor.putString(lastname, (String) jsonObj.get("lastname"));
-                editor.apply();
+                    editor.putInt(uid, ((Long) jsonObj.get("emp_id")).intValue());
+                    editor.putString(usertitle, (String) jsonObj.get("employeeTitle"));
+                    editor.putString(firstname, (String) jsonObj.get("firstname"));
+                    editor.putString(lastname, (String) jsonObj.get("lastname"));
+                    editor.apply();
 
-                if (jsonObj.get("employeeTitle").toString().equals("admin")) {
-                    Log.d("BRANCH: ", "starting admin menu");
-                    startActivity(new Intent(MainActivity.this, MainMenuAdminActivity.class));
-                } else {
+/*                    if (jsonObj.get("employeeTitle").toString().equals("admin")) {
+                        Log.d("BRANCH: ", "starting admin menu");
+                        startActivity(new Intent(MainActivity.this, MainMenuAdminActivity.class));
+                    } else {*/
                     Log.d("BRANCH: ", "starting user menu");
                     startActivity(new Intent(MainActivity.this, MainMenuActivity.class));
+                    //}
+                } else {
+                    outputText.setText(response);
                 }
-            } else {
-                outputText.setText(response);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                outputText.setText("Unable to connect to server.  Please try again later.");
             }
         }
 

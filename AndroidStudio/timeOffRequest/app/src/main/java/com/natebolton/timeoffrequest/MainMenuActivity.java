@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 public class MainMenuActivity extends AppCompatActivity {
 
-    Button logout, viewRequests, submitRequest;
+    Button logout, viewRequests, submitRequest, adminMenu;
     TextView welcomeMessage;
 
 
@@ -25,6 +25,13 @@ public class MainMenuActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences(MainActivity.MyPREFERENCES, Context.MODE_PRIVATE);
         findViewsById();
+
+        if (sharedPreferences.getString(MainActivity.usertitle,"").equals("admin")) {
+            adminMenu.setVisibility(View.VISIBLE);
+            adminMenu.setTextColor(Color.RED);
+        } else {
+            adminMenu.setVisibility(View.GONE);
+        }
 
         logout.setOnClickListener(new View.OnClickListener() {
 
@@ -41,9 +48,8 @@ public class MainMenuActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View arg0) {
-                welcomeMessage.setTextColor(Color.RED);
-                welcomeMessage.setTextSize(22);
-                welcomeMessage.setText("View Requests Coming Soon!");
+                Log.d("MAINMENU: ", "starting view requests");
+                startActivity(new Intent(MainMenuActivity.this, ViewOwnRequests.class));
 
             }
         });
@@ -52,22 +58,34 @@ public class MainMenuActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View arg0) {
-                welcomeMessage.setTextColor(Color.RED);
+/*                welcomeMessage.setTextColor(Color.RED);
                 welcomeMessage.setTextSize(22);
-                welcomeMessage.setText("Submit Requests Coming Soon!");
+                welcomeMessage.setText("Submit Requests Coming Soon!");*/
+                Log.d("MAINMENU: ", "starting submit own request");
+                startActivity(new Intent(MainMenuActivity.this, SubmitOwnRequest.class));
+            }
+        });
+
+        adminMenu.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                Log.d("BRANCH: ", "starting admin menu");
+                startActivity(new Intent(MainMenuActivity.this, MainMenuAdminActivity.class));
 
             }
         });
 
         //Log.d("GETSTRING", sharedPreferences.getString(MainActivity.firstname,""));
-        welcomeMessage.setText("Welcome, " + sharedPreferences.getString(MainActivity.firstname,"") + " " + sharedPreferences.getString(MainActivity.lastname,""));
+        welcomeMessage.setText("User:  " + sharedPreferences.getString(MainActivity.firstname,"") + " " + sharedPreferences.getString(MainActivity.lastname,""));
     }
 
     private void findViewsById() {
 
         logout = (Button) findViewById(R.id.buttonLogout);
         viewRequests = (Button) findViewById(R.id.viewRequests);
-        submitRequest = (Button) findViewById(R.id.submitRequest);
+        submitRequest = (Button) findViewById(R.id.submitRequestSubmit);
+        adminMenu = (Button) findViewById(R.id.adminMenu);
         welcomeMessage = (TextView) findViewById(R.id.textView4);
 
 

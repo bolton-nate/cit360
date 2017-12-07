@@ -5,8 +5,10 @@
  */
 package control;
 
+import java.util.LinkedList;
 import model.*;
 import java.util.List;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -58,7 +60,8 @@ public class HibernateControl {
         } finally {
             session.close();
         }
-        
+        System.out.println("Closing SessionFactory...");
+        factory.close();
         return pword;
     }
     
@@ -85,7 +88,8 @@ public class HibernateControl {
                 uid = (int) idList.get(0);
             }
             employee = (Employees) session.get(Employees.class, uid);
-            System.out.println("HIBERNATE GOT:  " + employee.toString());
+            Hibernate.initialize(employee.getEmployeeType().getTypeTitle());
+            //System.out.println("HIBERNATE GOT:  " + employee.toString());
             tx.commit();
         } catch (HibernateException e) {
             if (tx!=null) tx.rollback();
@@ -93,9 +97,64 @@ public class HibernateControl {
         } finally {
             session.close();
         }
-        
-        
+        System.out.println("Closing SessionFactory...");
+        factory.close();
         return employee;
+    }
+    
+    public List getRequestsByUid(int uid) {
+        try {
+            System.out.println("Creating SessionFactory...");
+            factory = HibernateControl.createSessionFactory();
+        } catch (Throwable ex) {
+            System.err.println("Failed to get session factory. " + ex);
+            throw new ExceptionInInitializerError(ex);
+        }
+        Session session = factory.openSession();
+        Transaction tx = null;
+        List rlist = null;
+        try {
+            tx = session.beginTransaction();
+            Query query = session.createQuery("FROM model.Requests WHERE emp_id = :empID ");
+            query.setParameter("empID", uid);
+            rlist = query.list();
+            System.out.println("HIBERNATE GOT:  " + rlist.get(0).toString());
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        System.out.println("Closing SessionFactory...");
+        factory.close();
+        return rlist;
+    }
+    
+    public boolean insertRequest(Requests request) {
+        try {
+            System.out.println("Creating SessionFactory...");
+            factory = HibernateControl.createSessionFactory();
+        } catch (Throwable ex) {
+            System.err.println("Failed to get session factory. " + ex);
+            throw new ExceptionInInitializerError(ex);
+        }
+        Session session = factory.openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            session.save(request);
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+            return false;
+        } finally {
+            session.close();
+        }
+        System.out.println("Closing SessionFactory...");
+        factory.close();
+        return true;
     }
     
     public static SessionFactory createSessionFactory() {

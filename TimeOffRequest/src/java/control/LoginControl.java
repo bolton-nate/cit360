@@ -50,7 +50,7 @@ public class LoginControl extends HttpServlet {
         }
         str = URLDecoder.decode(sb.toString(), "UTF-8");
         
-        System.out.println("USERLOG:  " + str);
+        //System.out.println("USERLOG:  " + str);
         JSONParser parser = new JSONParser();
         JSONObject jsonObj = null;
         try {
@@ -63,32 +63,33 @@ public class LoginControl extends HttpServlet {
         
         String u = (String) jsonObj.get("username");
         String p = (String) jsonObj.get("password");
-        PrintWriter out = response.getWriter();
-        int result = LoginControl.authenticateUser(u, p);
-        jsonObj = new JSONObject();
-        if ( result == 1) {
-            //TODO:  Success... now what?
-            HibernateControl hc = new HibernateControl();
-            Employees employee = hc.getEmployeeByUsername(u);
-            System.out.println("EMPLOYEE FIRST NAME: " + employee.getFirstName());
-            response.setContentType("application/json");
-            jsonObj.put("response", "Logged In!");
-            jsonObj.put("emp_id", employee.getEmpId());
-            jsonObj.put("employeeTitle", employee.getEmployeeType().getTypeTitle());
-            jsonObj.put("firstname", employee.getFirstName());
-            jsonObj.put("lastname", employee.getLastName());
-            System.out.println(jsonObj);
-            //out.println("Logged In!");
-            //System.out.println("Logged In!");
-        } else if (result == 0) {
-            jsonObj.put("response", "Error, wrong username or password.");
-            //out.println("Error, wrong username or password.");
-        } else {
-            jsonObj.put("response", "Error, something went wrong.");
-            //out.println("Error, something went wrong.");
-            
+        try (PrintWriter out = response.getWriter()) {
+            int result = LoginControl.authenticateUser(u, p);
+            jsonObj = new JSONObject();
+            if ( result == 1) {
+                //TODO:  Success... now what?
+                HibernateControl hc = new HibernateControl();
+                Employees employee = hc.getEmployeeByUsername(u);
+                //System.out.println("EMPLOYEE FIRST NAME: " + employee.getFirstName());
+                response.setContentType("application/json");
+                jsonObj.put("response", "Logged In!");
+                jsonObj.put("emp_id", employee.getEmpId());
+                jsonObj.put("employeeTitle", employee.getEmployeeType().getTypeTitle());
+                jsonObj.put("firstname", employee.getFirstName());
+                jsonObj.put("lastname", employee.getLastName());
+                //System.out.println(jsonObj);
+                //out.println("Logged In!");
+                //System.out.println("Logged In!");
+            } else if (result == 0) {
+                jsonObj.put("response", "Error, wrong username or password.");
+                //out.println("Error, wrong username or password.");
+            } else {
+                jsonObj.put("response", "Error, something went wrong.");
+                //out.println("Error, something went wrong.");
+
+            }
+            out.println(jsonObj);
         }
-        out.println(jsonObj);
     }
     
     public static int authenticateUser(String uname, String pword) {
